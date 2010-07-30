@@ -55,6 +55,18 @@ exception if the server's already running (TODO?). Defaults to sid 1.
 -T stops the specified virtual server, specify with -s. Will throw an
 exception if the server's not running (TODO?). Defaults to sid 1.
 
+-U specifies a username for a given operation, it does nothing by itself.
+
+-P changes a given user's password. Requires -U, and can use -s for the
+server ID, but will assume #1. Reads password from stdin:
+
+%echo 'password' | ./mutter -U Superuser -P
+Changing password for: SuperUser... done!
+
+You can just run it and enter the password without having it on your command
+line, simply enter the password then hit enter, and the program will exit.
+No need to ctrl+d or whatever.
+
 Where to report bugs:
 ~~~~~~~~~~~~~~~~~~~~~
 

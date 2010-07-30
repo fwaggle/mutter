@@ -20,6 +20,7 @@ using namespace Murmur;
 #define ACT_LIST 	1
 #define ACT_START 	2
 #define ACT_STOP	3
+#define ACT_PASS	4
 
 int
 main(int argc, char *argv[])
@@ -33,9 +34,10 @@ main(int argc, char *argv[])
 	Ice::CommunicatorPtr ic;
 	char *ckey = 0;
 	char *cval = 0;
+	char *user = 0;
 	int action = 0;
 
-	while ((c = getopt(argc, argv, "h:p:s:C:V:L")) != -1)
+	while ((c = getopt(argc, argv, "h:p:s:C:PU:V:LST")) != -1)
 		switch(c)
 		{
 		case 'h':
@@ -61,6 +63,12 @@ main(int argc, char *argv[])
 			break;
 		case 'T':
 			action = ACT_STOP;
+			break;
+		case 'U':
+			user = optarg;
+			break;
+		case 'P':
+			action = ACT_PASS;
 			break;
 		}
 	
@@ -99,6 +107,29 @@ main(int argc, char *argv[])
 				break;
 			case ACT_STOP:
 				server->stop();
+				break;
+			case ACT_PASS:
+				if (!user)
+					throw "-P requires -U";
+				else {
+					std::string uname (user);
+					NameList n;
+					n.push_back(uname);
+
+					IdMap users = server->getUserIds(n);
+					if (users[user] < 0) {
+						throw "User not found";
+					} else {
+						UserInfoMap uinfo = server->getRegistration(users[user]);
+						cout << "Changing password for: " << uinfo[UserName] << "... ";
+						string pass;
+						getline(cin, pass);
+						
+						uinfo[UserPassword] = pass;
+						server->updateRegistration(users[user], uinfo);
+						cout << "done!" << endl;
+					}
+				}
 				break;
 			}
 		}
