@@ -1,0 +1,50 @@
+
+  mutter - command line configuration for Murmur
+
+What it does:
+~~~~~~~~~~~~~
+
+The plan is to have this eventually built static, so that users with very
+little needs can trivially administrate a Murmur over Ice from the command
+line. It's not intended to replace a full web-admin tool - if your needs are
+that great just man-up and install one.
+
+How to Build:
+~~~~~~~~~~~~~
+
+It needs Ice, and a Murmur.ice file from your Murmur src tree. I didn't
+include one, because there are checksums now, so you'll want one that
+matches your Murmur's slice. Copy Murmur.ice into the build directory, and
+type make.
+
+It works with BSD make, untested with gmake right now. Some paths may be
+wrong, edit them as necessary. It's set up for FreeBSD ports locations of
+Ice and other libs and whatnot.
+
+How it works:
+~~~~~~~~~~~~~
+
+It defaults to connecting to localhost on port 6502. You can change this
+with the -h and -p parameters - anything Ice will accept can go here - it
+naively copies these parameters into a string and hands it off to
+stringToProxy(), so some care is waranted.
+
+-C is used to view and set configuration directives (getConf):
+
+%./mutter -h 127.0.0.1 -p 6502 -C registerurl
+registerurl=http://www.example.com
+
+-V is used to set the value of a configuration directive (setConf), and it
+requires -C:
+
+%./mutter -h 127.0.0.1 -p 6502 -C registerurl -V http://www.mumble.info
+registerurl=http://www.mumble.info
+
+Where to report bugs:
+~~~~~~~~~~~~~~~~~~~~~
+
+I'm usually on #mumble on freenode as fwaggle. You could start there.
+
+Note that some of it may not be bugs - this isn't intended to do anything
+other than naively send messages across Ice. Check you're handing the right
+value to Ice first.
