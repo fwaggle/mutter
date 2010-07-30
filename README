@@ -40,6 +40,9 @@ requires -C:
 %./mutter -h 127.0.0.1 -p 6502 -C registerurl -V http://www.mumble.info
 registerurl=http://www.mumble.info
 
+-s sets the server ID. It defaults to 1, and if you aren't virtualhosting
+Murmurs, then you probably won't ever need it. It takes a numeric ID.
+
 Where to report bugs:
 ~~~~~~~~~~~~~~~~~~~~~
 
