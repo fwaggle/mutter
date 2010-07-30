@@ -6,6 +6,8 @@
 ** Author: Jamie Fraser <jamie.f@sabrienix.com>
 */
 
+#include <iostream>
+#include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,6 +16,8 @@
 
 using namespace std;
 using namespace Murmur;
+
+#define ACT_LIST 1
 
 int
 main(int argc, char *argv[])
@@ -27,8 +31,9 @@ main(int argc, char *argv[])
 	Ice::CommunicatorPtr ic;
 	char *ckey = 0;
 	char *cval = 0;
+	int action = 0;
 
-	while ((c = getopt(argc, argv, "h:p:s:C:V:")) != -1)
+	while ((c = getopt(argc, argv, "h:p:s:C:V:L")) != -1)
 	        switch(c)
 	        {
                 case 'h':
@@ -46,6 +51,9 @@ main(int argc, char *argv[])
                 case 'V':
                         cval = optarg;
                         break;
+                case 'L':
+                        action = ACT_LIST;
+                        break;
 	        }
 	
 	ret = asprintf(&IceProxy, "Meta:tcp -h %s -p %d", host, port);
@@ -61,7 +69,26 @@ main(int argc, char *argv[])
 		
 		ServerPrx server = meta->getServer(sid);
 
-		if (cval && ckey) {
+		if (action) {
+		        switch (action)
+		        {
+		        case ACT_LIST:
+		                vector<ServerPrx> servers = meta->getAllServers();
+                                
+                                int i;
+                                for (i=0; i < (int)servers.size(); i++)
+                                {
+                		        string value = servers[i]->getConf("registername");
+                                        if (servers[i]->isRunning())
+                                                cout << setw(5) << right << i << "\t" << setw(50) << left << value << "\tOnline" << endl;
+                                        else
+                                                cout << setw(5) << right << i << "\t" << setw(50) << left << value << "\tOffline" << endl;
+                                }
+		                break;
+		        }
+		}
+		else if (cval && ckey)
+		{
 		        // We're setting a value
 		        server->setConf(ckey, cval);
 		        string value = server->getConf(ckey);

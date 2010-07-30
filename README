@@ -43,6 +43,10 @@ registerurl=http://www.mumble.info
 -s sets the server ID. It defaults to 1, and if you aren't virtualhosting
 Murmurs, then you probably won't ever need it. It takes a numeric ID.
 
+-L lists available servers. It doesn't require any arguments, or any of the
+other arguments. If you're virtualhosting, you can use it to find out the ID
+of the server you're looking for.
+
 Where to report bugs:
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -51,3 +55,12 @@ I'm usually on #mumble on freenode as fwaggle. You could start there.
 Note that some of it may not be bugs - this isn't intended to do anything
 other than naively send messages across Ice. Check you're handing the right
 value to Ice first.
+
+It should be noted this project is also a learning experience for myself,
+for C++, Ice, and Murmur in general. I don't *need* it, we're a commercial
+Murmur host with our own web-based front end, it's just a fun project and if
+others find it useful, that's great.
+
+It's probably full of bugs and C-isms - I can't seem to let go of printf()
+et al, as but one shining example. I try to squelch warnings whenever I can,
+it should build clean... but that doesn't mean there isn't other dumb stuff.
