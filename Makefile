@@ -1,5 +1,15 @@
-all:
-	slice2cpp -I/usr/local/share/Ice ../Murmur.ice
-	c++ -I . -I/usr/local/include -c Murmur.cpp 
-	c++ -Wall -I . -I/usr/local/include -c mutter.cpp
-	c++ -Wall -o mutter Murmur.o mutter.o -L/usr/local/lib -lIce -lIceUtil -liconv -lpthread
+INCPATH		= -I. -I/usr/local/share/Ice -I/usr/local/include
+CFLAGS		= -Wall
+LIBS		= -L/usr/local/lib -lIce -lIceUtil -lpthread -liconv
+
+all: Murmur.o mutter.cpp
+	c++ $(CFLAGS) -o mutter Murmur.o mutter.cpp $(INCPATH) $(LIBS)
+
+Murmur.cpp:
+	slice2cpp $(INCPATH) Murmur.ice
+
+Murmur.o: Murmur.cpp
+	c++ $(INCPATH) -c Murmur.cpp 
+
+clean:
+	rm -f *~ Murmur.o Murmur.cpp Murmur.h mutter
