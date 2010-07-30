@@ -1,9 +1,10 @@
 /*
-** mutter - command line administration tool for Murur
+** mutter - command line administration tool for Murmur
 ** (C) 2009-2010 MumbleDog
 ** http://www.mumbledog.com/
 **
 ** Author: Jamie Fraser <jamie.f@sabrienix.com>
+** Released under the terms of a new-style BSD license.
 */
 
 #include <iostream>
