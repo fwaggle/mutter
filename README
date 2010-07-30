@@ -49,6 +49,12 @@ Murmurs, then you probably won't ever need it. It takes a numeric ID.
 other arguments. If you're virtualhosting, you can use it to find out the ID
 of the server you're looking for.
 
+-S starts the specified virtual server, specify with -s. Will throw an
+exception if the server's already running (TODO?). Defaults to sid 1.
+
+-T stops the specified virtual server, specify with -s. Will throw an
+exception if the server's not running (TODO?). Defaults to sid 1.
+
 Where to report bugs:
 ~~~~~~~~~~~~~~~~~~~~~
 

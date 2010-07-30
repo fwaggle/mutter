@@ -17,7 +17,9 @@
 using namespace std;
 using namespace Murmur;
 
-#define ACT_LIST 1
+#define ACT_LIST 	1
+#define ACT_START 	2
+#define ACT_STOP	3
 
 int
 main(int argc, char *argv[])
@@ -34,79 +36,91 @@ main(int argc, char *argv[])
 	int action = 0;
 
 	while ((c = getopt(argc, argv, "h:p:s:C:V:L")) != -1)
-	        switch(c)
-	        {
-                case 'h':
-                        host = optarg;
-                        break;
-                case 'p':
-                        port = atoi(optarg);
-                        break;
-                case 's':
-                        sid = atoi(optarg);
-                        break;
-                case 'C':
-                        ckey = optarg;
-                        break;
-                case 'V':
-                        cval = optarg;
-                        break;
-                case 'L':
-                        action = ACT_LIST;
-                        break;
-	        }
+		switch(c)
+		{
+		case 'h':
+			host = optarg;
+			break;
+		case 'p':
+			port = atoi(optarg);
+			break;
+		case 's':
+			sid = atoi(optarg);
+			break;
+		case 'C':
+			ckey = optarg;
+			break;
+		case 'V':
+			cval = optarg;
+			break;
+		case 'L':
+			action = ACT_LIST;
+			break;
+		case 'S':
+			action = ACT_START;
+			break;
+		case 'T':
+			action = ACT_STOP;
+			break;
+		}
 	
 	ret = asprintf(&IceProxy, "Meta:tcp -h %s -p %d", host, port);
 	if (!ret)
-	        return -1;
-	
+		return -1;
+
 	try {
 		ic = Ice::initialize(argc, argv);
 		Ice::ObjectPrx base = ic->stringToProxy(IceProxy);
 		MetaPrx meta = MetaPrx::checkedCast(base);
 		if (!meta)
 			throw "Invalid proxy";
-		
+
 		ServerPrx server = meta->getServer(sid);
+		vector<ServerPrx> servers = meta->getAllServers();
 
 		if (action) {
-		        switch (action)
-		        {
-		        case ACT_LIST:
-		                vector<ServerPrx> servers = meta->getAllServers();
-                                
-                                int i;
-                                for (i=0; i < (int)servers.size(); i++)
-                                {
-                		        string value = servers[i]->getConf("registername");
-                                        if (servers[i]->isRunning())
-                                                cout << setw(5) << right << i << "\t" << setw(50) << left << value << "\tOnline" << endl;
-                                        else
-                                                cout << setw(5) << right << i << "\t" << setw(50) << left << value << "\tOffline" << endl;
-                                }
-		                break;
-		        }
+			switch (action)
+			{
+			case ACT_LIST:
+				int i;
+				for (i=0; i < (int)servers.size(); i++)
+				{
+					string value = servers[i]->getConf("registername");
+					if (servers[i]->isRunning())
+					cout << setw(5) << right << i << "\t" << setw(50) << left 
+						<< value << "\tOnline" << endl;
+					else
+						cout << setw(5) << right << i << "\t" << setw(50) << left 
+						<< value << "\tOffline" << endl;
+				}
+				break;
+			case ACT_START:
+				server->start();
+				break;
+			case ACT_STOP:
+				server->stop();
+				break;
+			}
 		}
 		else if (cval && ckey)
 		{
-		        // We're setting a value
-		        server->setConf(ckey, cval);
-		        string value = server->getConf(ckey);
-		        cout << ckey << "=" << value << endl;
-		} 
+			// We're setting a value
+			server->setConf(ckey, cval);
+			string value = server->getConf(ckey);
+			cout << ckey << "=" << value << endl;
+		}
 		else if (ckey)
 		{
-		        // We're just checking a value
-		        string value = server->getConf(ckey);
-		        cout << ckey << "=" << value << endl;
+			// We're just checking a value
+			string value = server->getConf(ckey);
+			cout << ckey << "=" << value << endl;
 		}
-		
 	} catch (const Ice::Exception& ex) {
 		cerr << ex << endl;
 		ret = -1;
 	} catch (const char* msg) {
-	 	cerr << msg << endl;
-	 	ret = -1;
+		cerr << msg << endl;
+		ret = -1;
 	}
 	
 	if (ic)
