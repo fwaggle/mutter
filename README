@@ -45,6 +45,11 @@ registerurl=http://www.mumble.info
 -s sets the server ID. It defaults to 1, and if you aren't virtualhosting
 Murmurs, then you probably won't ever need it. It takes a numeric ID.
 
+-z sets the Ice secret - if this is configured in your Murmur.ini, you'll
+need to specify it every time you want to run a command. Eventually we'll
+either have a .mutterrc, or just look for murmur.ini in common locations and
+help ourselves to it, but for now you got to specify it.
+
 -L lists available servers. It doesn't require any arguments, or any of the
 other arguments. If you're virtualhosting, you can use it to find out the ID
 of the server you're looking for.

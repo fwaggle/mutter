@@ -38,9 +38,10 @@ main(int argc, char *argv[])
 	char *ckey = 0;
 	char *cval = 0;
 	char *user = 0;
+	char *secret = 0;
 	int action = 0;
 
-	while ((c = getopt(argc, argv, "h:p:s:A:C:D:PU:V:LST")) != -1)
+	while ((c = getopt(argc, argv, "h:p:s:z:A:C:D:PU:V:LST")) != -1)
 		switch(c)
 		{
 		case 'h':
@@ -51,6 +52,9 @@ main(int argc, char *argv[])
 			break;
 		case 's':
 			sid = atoi(optarg);
+			break;
+		case 'z':
+			secret = optarg;
 			break;
 		case 'C':
 			ckey = optarg;
@@ -90,13 +94,25 @@ main(int argc, char *argv[])
 	try {
 		ic = Ice::initialize(argc, argv);
 		Ice::ObjectPrx base = ic->stringToProxy(IceProxy);
+		Ice::Context ctx;
+		if (secret) {
+			string sec (secret);
+			ctx["secret"] = sec;
+		}
 		MetaPrx meta = MetaPrx::checkedCast(base);
 		if (!meta)
 			throw "Invalid proxy";
 
-		ServerPrx server = meta->getServer(sid);
-		vector<ServerPrx> servers = meta->getAllServers();
-		std::string uname (user);
+		ServerPrx server = meta->getServer(sid, ctx);
+		vector<ServerPrx> servers = meta->getAllServers(ctx);
+
+		// ugly hack, i'll fix this later when i wrap everything
+		// in functions. :D
+		char *usr = user;
+		if (!usr)
+			usr = (char *)"";
+			
+		string uname (usr);
 		NameList n;
 		IdMap users;
 
@@ -107,8 +123,8 @@ main(int argc, char *argv[])
 				int i;
 				for (i=0; i < (int)servers.size(); i++)
 				{
-					string value = servers[i]->getConf("registername");
-					if (servers[i]->isRunning())
+					string value = servers[i]->getConf("registername", ctx);
+					if (servers[i]->isRunning(ctx))
 					cout << setw(5) << right << i << "\t" << setw(50) << left 
 						<< value << "\tOnline" << endl;
 					else
@@ -117,19 +133,19 @@ main(int argc, char *argv[])
 				}
 				break;
 			case ACT_START:
-				server->start();
+				server->start(ctx);
 				break;
 			case ACT_STOP:
-				server->stop();
+				server->stop(ctx);
 				break;
 			case ACT_DUSER:
 				n.push_back(uname);
 
-				users = server->getUserIds(n);
+				users = server->getUserIds(n, ctx);
 				if (users[user] < 0) {
 					throw "User not found";
 				} else {
-					server->unregisterUser(users[user]);
+					server->unregisterUser(users[user], ctx);
 					cout << user << " deleted." << endl;
 				}
 				break;
@@ -141,17 +157,17 @@ main(int argc, char *argv[])
 					NameList n;
 */					n.push_back(uname);
 
-					users = server->getUserIds(n);
+					users = server->getUserIds(n, ctx);
 					if (users[user] < 0) {
 						throw "User not found";
 					} else {
-						UserInfoMap uinfo = server->getRegistration(users[user]);
+						UserInfoMap uinfo = server->getRegistration(users[user], ctx);
 						cout << "Changing password for: " << uinfo[UserName] << "... " << endl;
 						string pass;
 						getline(cin, pass);
 						
 						uinfo[UserPassword] = pass;
-						server->updateRegistration(users[user], uinfo);
+						server->updateRegistration(users[user], uinfo, ctx);
 						cout << "done!" << endl;
 					}
 				}
@@ -167,7 +183,7 @@ main(int argc, char *argv[])
 				getline(cin, pass);
 						
 				uinfo[UserPassword] = pass;
-				server->registerUser(uinfo);
+				server->registerUser(uinfo, ctx);
 				cout << "done!" << endl;
 				break;
 			}
@@ -176,13 +192,13 @@ main(int argc, char *argv[])
 		{
 			// We're setting a value
 			server->setConf(ckey, cval);
-			string value = server->getConf(ckey);
+			string value = server->getConf(ckey, ctx);
 			cout << ckey << "=" << value << endl;
 		}
 		else if (ckey)
 		{
 			// We're just checking a value
-			string value = server->getConf(ckey);
+			string value = server->getConf(ckey, ctx);
 			cout << ckey << "=" << value << endl;
 		}
 	} catch (const Ice::Exception& ex) {
