@@ -43,6 +43,11 @@ requires -C:
 %./mutter -C registerurl -V http://www.mumble.info
 registerurl=http://www.mumble.info
 
+You can also use the argument of '-' for -V, to read the value from stdin, 
+which will let you do things like reading your key/cert from a file:
+
+%cat key.pem | ./mutter -C key -V -
+
 -s sets the server ID. It defaults to 1, and if you aren't virtualhosting
 Murmurs, then you probably won't ever need it. It takes a numeric ID.
 

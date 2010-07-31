@@ -76,6 +76,18 @@ config_poke(char *key, char *val)
 }
 
 void
+config_poke(char *key, string val)
+{
+	string value;
+	ServerPrx server;
+
+	server = meta->getServer(serverId, ctx);
+	server->setConf(key, val, ctx);
+	value = server->getConf(key, ctx);
+	cout << key << "=" << val << endl;
+}
+
+void
 serv_start(void)
 {
 	ServerPrx server;
@@ -317,7 +329,20 @@ main(int argc, char *argv[])
 			config_peek(confKey);
 			break;
 		case ACT_CONFPOKE:
-			config_poke(confKey, confValue);
+			if (strcmp(confValue, "-") == 0)
+			{
+				string confVal;
+				string line;
+				
+				while (cin) {
+					getline(cin, line);
+					confVal = confVal + line + "\n";
+				}
+				
+				config_poke(confKey, confVal);
+			}
+			else
+				config_poke(confKey, confValue);
 			break;
 		case ACT_START:
 			serv_start();
