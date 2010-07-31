@@ -12,4 +12,4 @@ Murmur.o: Murmur.cpp
 	c++ $(INCPATH) -c Murmur.cpp 
 
 clean:
-	rm -f *~ Murmur.o Murmur.cpp Murmur.h mutter
+	rm -f *~ Murmur.o Murmur.cpp Murmur.h mutter mutter.core
