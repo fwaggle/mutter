@@ -22,6 +22,8 @@ using namespace Murmur;
 #define ACT_START 	2
 #define ACT_STOP	3
 #define ACT_PASS	4
+#define ACT_AUSER	5
+#define ACT_DUSER	6
 
 int
 main(int argc, char *argv[])
@@ -38,7 +40,7 @@ main(int argc, char *argv[])
 	char *user = 0;
 	int action = 0;
 
-	while ((c = getopt(argc, argv, "h:p:s:C:PU:V:LST")) != -1)
+	while ((c = getopt(argc, argv, "h:p:s:A:C:D:PU:V:LST")) != -1)
 		switch(c)
 		{
 		case 'h':
@@ -65,6 +67,14 @@ main(int argc, char *argv[])
 		case 'T':
 			action = ACT_STOP;
 			break;
+		case 'A':
+			user = optarg;
+			action = ACT_AUSER;
+			break;
+		case 'D':
+			user = optarg;
+			action = ACT_DUSER;
+			break;
 		case 'U':
 			user = optarg;
 			break;
@@ -86,6 +96,9 @@ main(int argc, char *argv[])
 
 		ServerPrx server = meta->getServer(sid);
 		vector<ServerPrx> servers = meta->getAllServers();
+		std::string uname (user);
+		NameList n;
+		IdMap users;
 
 		if (action) {
 			switch (action)
@@ -109,20 +122,31 @@ main(int argc, char *argv[])
 			case ACT_STOP:
 				server->stop();
 				break;
+			case ACT_DUSER:
+				n.push_back(uname);
+
+				users = server->getUserIds(n);
+				if (users[user] < 0) {
+					throw "User not found";
+				} else {
+					server->unregisterUser(users[user]);
+					cout << user << " deleted." << endl;
+				}
+				break;
 			case ACT_PASS:
 				if (!user)
 					throw "-P requires -U";
 				else {
-					std::string uname (user);
+/*					std::string uname (user);
 					NameList n;
-					n.push_back(uname);
+*/					n.push_back(uname);
 
-					IdMap users = server->getUserIds(n);
+					users = server->getUserIds(n);
 					if (users[user] < 0) {
 						throw "User not found";
 					} else {
 						UserInfoMap uinfo = server->getRegistration(users[user]);
-						cout << "Changing password for: " << uinfo[UserName] << "... ";
+						cout << "Changing password for: " << uinfo[UserName] << "... " << endl;
 						string pass;
 						getline(cin, pass);
 						
@@ -131,6 +155,20 @@ main(int argc, char *argv[])
 						cout << "done!" << endl;
 					}
 				}
+				break;
+			case ACT_AUSER:
+				UserInfoMap uinfo;
+				std::string uname (user);
+
+				uinfo[UserName] = uname;
+
+				cout << "Setting password for: " << uinfo[UserName] << "... " << endl;
+				string pass;
+				getline(cin, pass);
+						
+				uinfo[UserPassword] = pass;
+				server->registerUser(uinfo);
+				cout << "done!" << endl;
 				break;
 			}
 		}

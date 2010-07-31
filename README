@@ -67,6 +67,19 @@ You can just run it and enter the password without having it on your command
 line, simply enter the password then hit enter, and the program will exit.
 No need to ctrl+d or whatever.
 
+-A creates a user registration, takes an argument with the users name, then
+reads the password from stdin similar to -P. Will fail if the user exists.
+
+%echo 'password' | ./mutter -A fwaggle
+Setting password for: fwaggle...
+done!
+
+-D deletes a user account. Takes an argument of the username. No
+confirmation is done and this is not reversible. Be careful.
+
+%./mutter -D fwaggle
+fwaggle deleted.
+
 Where to report bugs:
 ~~~~~~~~~~~~~~~~~~~~~
 
