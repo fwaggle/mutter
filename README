@@ -26,20 +26,21 @@ Ice and other libs and whatnot.
 How it works:
 ~~~~~~~~~~~~~
 
-It defaults to connecting to localhost on port 6502. You can change this
-with the -h and -p parameters - anything Ice will accept can go here - it
-naively copies these parameters into a string and hands it off to
-stringToProxy(), so some care is waranted.
+It defaults to connecting TCP to localhost on port 6502. You can change this
+with the -i parameter - anything Ice will accept can go here - it naively
+copies this parameter to stringToProxy(), so some care is waranted.
+
+%./mutter -i Meta:tcp -h 127.0.0.1 -p 6502 -l
 
 -C is used to view and set configuration directives (getConf):
 
-%./mutter -h 127.0.0.1 -p 6502 -C registerurl
+%./mutter -C registerurl
 registerurl=http://www.example.com
 
 -V is used to set the value of a configuration directive (setConf), and it
 requires -C:
 
-%./mutter -h 127.0.0.1 -p 6502 -C registerurl -V http://www.mumble.info
+%./mutter -C registerurl -V http://www.mumble.info
 registerurl=http://www.mumble.info
 
 -s sets the server ID. It defaults to 1, and if you aren't virtualhosting
@@ -60,29 +61,30 @@ exception if the server's already running (TODO?). Defaults to sid 1.
 -T stops the specified virtual server, specify with -s. Will throw an
 exception if the server's not running (TODO?). Defaults to sid 1.
 
--U specifies a username for a given operation, it does nothing by itself.
+-l will list the registered users on the given server id.
 
--P changes a given user's password. Requires -U, and can use -s for the
+-u specifies a username for a given operation, it does nothing by itself.
+
+-p changes a given user's password. Requires -u, and can use -s for the
 server ID, but will assume #1. Reads password from stdin:
 
-%echo 'password' | ./mutter -U Superuser -P
-Changing password for: SuperUser... done!
+%echo 'password' | ./mutter -u Superuser -p
+Enter new password for: SuperUser: done!
 
 You can just run it and enter the password without having it on your command
 line, simply enter the password then hit enter, and the program will exit.
 No need to ctrl+d or whatever.
 
--A creates a user registration, takes an argument with the users name, then
-reads the password from stdin similar to -P. Will fail if the user exists.
+-a creates a user registration, requires -u <username>, then reads the 
+password from stdin similar to -p. Will fail if the user exists.
 
-%echo 'password' | ./mutter -A fwaggle
-Setting password for: fwaggle...
-done!
+%echo 'password' | ./mutter -a -u fwaggle
+Setting password for: fwaggle: done!
 
--D deletes a user account. Takes an argument of the username. No
+-d deletes a user account. Requires -u with an argument of the username. No
 confirmation is done and this is not reversible. Be careful.
 
-%./mutter -D fwaggle
+%./mutter -d -u fwaggle
 fwaggle deleted.
 
 Where to report bugs:

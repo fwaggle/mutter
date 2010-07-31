@@ -3,7 +3,8 @@ CFLAGS		= -Wall
 LIBS		= -L/usr/local/lib -lIce -lIceUtil -lpthread -liconv
 
 all: Murmur.o mutter.cpp
-	c++ $(CFLAGS) -o mutter Murmur.o mutter.cpp $(INCPATH) $(LIBS)
+#	c++ $(CFLAGS) -o mutter Murmur.o mutter.cpp $(INCPATH) $(LIBS)
+	c++ $(CFLAGS) -o mutter Murmur.o main.cpp $(INCPATH) $(LIBS)
 
 Murmur.cpp:
 	slice2cpp $(INCPATH) Murmur.ice
