@@ -220,7 +220,16 @@ usage(char *argv[])
 	cout << "Usage: " << argv[0] << " [-i <endpoint>] [-s <server id>]"
 		" [-z <secret>] <action>" << endl << endl;
 	cout << "Where action is one of:" << endl;
+	cout << "\t-C <key> => View configuration key" << endl;
 	cout << "\t-C <key> -V <value> => Set configuration key to value" << endl;
+	cout << "\t-C <key> -V - => Read configuration value from stdin." << endl;
+	cout << "\t-L => List all virtual servers." << endl;
+	cout << "\t-S => Start a virtual server." << endl;
+	cout << "\t-T => Stop a virtual server." << endl;
+	cout << "\t-l => List all users on a virtual server." << endl;
+	cout << "\t-a -u <username> => Register a user (reads pass from stdin)" << endl;
+	cout << "\t-p -u <username> => Change user's password (reads from stdin)" << endl;
+	cout << "\t-d -u <username> => Unregister (delete) a user." << endl;
 }
 
 int
