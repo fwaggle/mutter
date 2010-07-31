@@ -2,8 +2,7 @@ INCPATH		= -I. -I/usr/local/share/Ice -I/usr/local/include
 CFLAGS		= -Wall
 LIBS		= -L/usr/local/lib -lIce -lIceUtil -lpthread -liconv
 
-all: Murmur.o mutter.cpp
-#	c++ $(CFLAGS) -o mutter Murmur.o mutter.cpp $(INCPATH) $(LIBS)
+all: Murmur.o main.cpp
 	c++ $(CFLAGS) -o mutter Murmur.o main.cpp $(INCPATH) $(LIBS)
 
 Murmur.cpp:
