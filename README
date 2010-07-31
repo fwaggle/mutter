@@ -30,7 +30,7 @@ It defaults to connecting TCP to localhost on port 6502. You can change this
 with the -i parameter - anything Ice will accept can go here - it naively
 copies this parameter to stringToProxy(), so some care is waranted.
 
-%./mutter -i Meta:tcp -h 127.0.0.1 -p 6502 -l
+%./mutter -i 'Meta:tcp -h 127.0.0.1 -p 6502' -l
 
 -C is used to view and set configuration directives (getConf):
 
