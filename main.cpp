@@ -38,15 +38,17 @@
 using namespace std;
 using namespace Murmur;
 
-#define ACT_CONFPEEK	1
-#define ACT_CONFPOKE	2
-#define ACT_START	3
-#define ACT_STOP	4
-#define ACT_SERVLIST	5
-#define ACT_USERADD	6
-#define ACT_USERDEL	7
-#define ACT_USERPASS	8
-#define ACT_USERLIST	9
+#define ACT_CONFPEEK	 1
+#define ACT_CONFPOKE	 2
+#define ACT_START	 3
+#define ACT_STOP	 4
+#define ACT_SERVLIST	 5
+#define ACT_USERADD	 6
+#define ACT_USERDEL	 7
+#define ACT_USERPASS	 8
+#define ACT_USERLIST	 9
+#define ACT_SERVNEW	10
+#define ACT_SERVDEL	11
 
 MetaPrx meta;
 Ice::Context ctx;
@@ -106,9 +108,33 @@ serv_stop(void)
 }
 
 void
+serv_new(void)
+{
+	ServerPrx server;
+	int id;
+
+	server = meta->newServer(ctx);
+	id = server->id(ctx);
+	
+	cout << "New server ID: " << id << endl;
+}
+
+void
+serv_del(void)
+{
+	ServerPrx server;
+
+	server = meta->getServer(serverId, ctx);
+	if (server->isRunning(ctx))
+		server->stop(ctx);
+	server->_cpp_delete(ctx);
+	cout << "Server deleted!" << endl;
+}
+
+void
 serv_list(void)
 {
-	int i;
+	int i, id;
 	string name, host, port;
 	vector<ServerPrx> servers = meta->getAllServers(ctx);
 
@@ -119,11 +145,12 @@ serv_list(void)
 	
 	for (i=0; i < (int)servers.size(); i++)
 	{
+		id = servers[i]->id(ctx);
 		name = servers[i]->getConf("registername", ctx);
 		host = servers[i]->getConf("host", ctx);
 		port = servers[i]->getConf("port", ctx);
 		
-		cout << setw(5) << right << i+1 << " " << setw(40) << left << name;
+		cout << setw(5) << right << id << " " << setw(40) << left << name;
 		if (servers[i]->isRunning(ctx))
 			cout << " On  ";
 		else
@@ -265,7 +292,7 @@ main(int argc, char *argv[])
 	/*
 	** Parse command line options
 	*/
-	while ((c = getopt(argc, argv, "adi:lps:u:z:C:LSTV:")) != -1)
+	while ((c = getopt(argc, argv, "adi:lpnrs:u:z:C:LSTV:")) != -1)
 		switch (c)
 		{
 		case 'a':
@@ -283,6 +310,12 @@ main(int argc, char *argv[])
 		case 'p':
 			if (!action)
 				action = ACT_USERPASS;
+			break;
+		case 'n':
+			action = ACT_SERVNEW;
+			break;
+		case 'r':
+			action = ACT_SERVDEL;
 			break;
 		case 's':
 			serverId = atoi(optarg);
@@ -361,6 +394,12 @@ main(int argc, char *argv[])
 			break;
 		case ACT_SERVLIST:
 			serv_list();
+			break;
+		case ACT_SERVNEW:
+			serv_new();
+			break;
+		case ACT_SERVDEL:
+			serv_del();
 			break;
 		case ACT_USERADD:
 			if (!userName)
