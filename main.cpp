@@ -251,8 +251,10 @@ usage(char *argv[])
 	cout << "\t-C <key> -V <value> => Set configuration key to value" << endl;
 	cout << "\t-C <key> -V - => Read configuration value from stdin." << endl;
 	cout << "\t-L => List all virtual servers." << endl;
-	cout << "\t-S => Start a virtual server." << endl;
-	cout << "\t-T => Stop a virtual server." << endl;
+	cout << "\t-N => Create a new virtual server." << endl;
+	cout << "\t-R => Remove a virtual server (specify with -s)." << endl;
+	cout << "\t-S => Start a virtual server (specify with -s)." << endl;
+	cout << "\t-T => Stop a virtual server (specify with -s)." << endl;
 	cout << "\t-l => List all users on a virtual server." << endl;
 	cout << "\t-a -u <username> => Register a user (reads pass from stdin)" << endl;
 	cout << "\t-p -u <username> => Change user's password (reads from stdin)" << endl;
@@ -292,7 +294,7 @@ main(int argc, char *argv[])
 	/*
 	** Parse command line options
 	*/
-	while ((c = getopt(argc, argv, "adi:lpnrs:u:z:C:LSTV:")) != -1)
+	while ((c = getopt(argc, argv, "adi:lps:u:z:C:LNRSTV:")) != -1)
 		switch (c)
 		{
 		case 'a':
@@ -311,12 +313,6 @@ main(int argc, char *argv[])
 			if (!action)
 				action = ACT_USERPASS;
 			break;
-		case 'n':
-			action = ACT_SERVNEW;
-			break;
-		case 'r':
-			action = ACT_SERVDEL;
-			break;
 		case 's':
 			serverId = atoi(optarg);
 			break;
@@ -333,6 +329,12 @@ main(int argc, char *argv[])
 			break;
 		case 'L':
 			action = ACT_SERVLIST;
+			break;
+		case 'N':
+			action = ACT_SERVNEW;
+			break;
+		case 'R':
+			action = ACT_SERVDEL;
 			break;
 		case 'S':
 			action = ACT_START;

@@ -60,6 +60,14 @@ help ourselves to it, but for now you got to specify it.
 other arguments. If you're virtualhosting, you can use it to find out the ID
 of the server you're looking for.
 
+-N creates a new virtual server. It won't start it or anything - just create
+one. You can then specify host/port, a key, etc using -C-V, and then start
+it with -S.
+
+-R removes a virtual server. Specify the server with -s. Be extremely
+careful, there's no confirmation or checks or anything (except the server
+must first be stopped with -T)!
+
 -S starts the specified virtual server, specify with -s. Will throw an
 exception if the server's already running (TODO?). Defaults to sid 1.
 
