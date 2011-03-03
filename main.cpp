@@ -49,6 +49,7 @@ using namespace Murmur;
 #define ACT_USERLIST	 9
 #define ACT_SERVNEW	10
 #define ACT_SERVDEL	11
+#define ACT_PLAYERLIST	12
 
 MetaPrx meta;
 Ice::Context ctx;
@@ -240,6 +241,20 @@ user_list(void)
 }
 
 void
+player_list(void)
+{
+	UserMap users;
+	ServerPrx server;
+	
+	server = meta->getServer(serverId, ctx);
+	users = server->getUsers(ctx);
+
+	cout << "SID      Name    Ping" << endl;	
+	for (UserMap::iterator ii=users.begin(); ii != users.end(); ii++)
+		cout << setw(8) << right << (*ii).first << " " << (*ii).second.name << " " << (*ii).second.udpPing << endl;
+}
+
+void
 usage(char *argv[])
 {
 	cout << "Mutter - (C) 2010 Jamie Fraser @ MumbleDog "
@@ -294,7 +309,7 @@ main(int argc, char *argv[])
 	/*
 	** Parse command line options
 	*/
-	while ((c = getopt(argc, argv, "adi:lps:u:z:C:LNRSTV:")) != -1)
+	while ((c = getopt(argc, argv, "adi:lps:u:z:C:LPNRSTV:")) != -1)
 		switch (c)
 		{
 		case 'a':
@@ -329,6 +344,9 @@ main(int argc, char *argv[])
 			break;
 		case 'L':
 			action = ACT_SERVLIST;
+			break;
+		case 'P':
+			action = ACT_PLAYERLIST;
 			break;
 		case 'N':
 			action = ACT_SERVNEW;
@@ -396,6 +414,9 @@ main(int argc, char *argv[])
 			break;
 		case ACT_SERVLIST:
 			serv_list();
+			break;
+		case ACT_PLAYERLIST:
+			player_list();
 			break;
 		case ACT_SERVNEW:
 			serv_new();
