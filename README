@@ -1,7 +1,20 @@
-
                mutter - command line configuration for Murmur
             (C) 2009-2010 MumbleDog - http://www.mumbledog.com/
                    Released under a new-style BSD license.
+
+*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*
+
+I've moved this file into the "mutter" branch on my Mumble tree, made it a QT
+project, and traded getopt for Boost in the hopes of one day getting it
+included in the mainline tree (and thus, the static binaries).
+
+I will likely not be updating this tree much at all, unless the devs give me
+a definite "no, we don't want that crap in our tree".
+
+See the new code (with new features) here:
+https://github.com/fwaggle/mumble/tree/mutter/src/mutter
+
+*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*DEPRECATED*
 
 What it does:
 ~~~~~~~~~~~~~
